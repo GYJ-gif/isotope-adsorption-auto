@@ -1,0 +1,27 @@
+{
+  "iastModule": "IAST_Auto_Template",
+  "qstModule": "Qst_Auto_Template",
+  "originModule": "Origin_Auto_Template",
+  "inputRootDefault": "D:/calculate/260706",
+  "samplesDefault": [
+    "Ag-BeTa",
+    "Ag-MOR",
+    "Ag-USY",
+    "Ag-ZSM-5",
+    "Cu-FER",
+    "Cu-MOR",
+    "Cu-USY",
+    "Cu-ZSM-5"
+  ],
+  "steps": {
+    "extractAdsorptionCsv": true,
+    "calculateIAST": true,
+    "calculateQst": true,
+    "originPlot": true
+  },
+  "notes": {
+    "qstNegativePolicy": "If Qst values are negative, warn and skip Qst plot only.",
+    "n2Policy": "N2 columns and plots are ignored."
+  }
+}
+

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Isotope Adsorption Auto"
+  short_description: "Automate adsorption IAST, Qst, and Origin plots."
+  default_prompt: "Use $isotope-adsorption-auto to run the complete isotope adsorption automation workflow for my input folder."
+
+policy:
+  allow_implicit_invocation: true

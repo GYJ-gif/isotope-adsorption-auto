@@ -1,0 +1,55 @@
+{
+  "templateOpju": "templates/template.opju",
+  "inputRootDefault": "D:/calculate/260706",
+  "originFolders": {
+    "hd": "/Folder1/吸附/",
+    "calc": "/Folder1/计算/"
+  },
+  "excelSheets": {
+    "adsorption": "吸附数据",
+    "qst": "Qst结果",
+    "iast": "IAST结果"
+  },
+  "adsorptionColumns": {
+    "H2_77K": [1, 2],
+    "D2_77K": [4, 5],
+    "H2_87K": [7, 8],
+    "D2_87K": [10, 11]
+  },
+  "qstColumns": {
+    "H2": [1, 2],
+    "D2": [6, 7]
+  },
+  "iastColumns": {
+    "77K": [1, 2, 3, 4, 5, 6, 7],
+    "87K": [10, 11, 12, 13, 14, 15, 16]
+  },
+  "axes": {
+    "HD": {"xFrom": -1, "xTo": 110, "yFrom": -0.5, "yTo": 5},
+    "IAST": {"xFrom": 0, "xTo": 106, "yFrom": 1, "yTo": 1.6},
+    "Qst": {
+      "xFrom": 0,
+      "xTo": 3,
+      "manualYBySample": {
+        "Ag-BeTa": [6.5, 11],
+        "Ag-MOR": [0, 16],
+        "Ag-USY": [12.5, 22],
+        "Ag-ZSM-5": [6.5, 11],
+        "Cu-FER": [6.5, 15],
+        "Cu-MOR": [16.5, 26.5],
+        "Cu-USY": [6.5, 11],
+        "Cu-ZSM-5": [5, 10]
+      }
+    }
+  },
+  "qst": {
+    "skipPlotWhenNegative": true
+  },
+  "pngExport": {
+    "enabled": true,
+    "uniformWidthPx": 3200,
+    "postCropWhiteMargin": false
+  },
+  "titleFormat": "\\b({sample})",
+  "samplesDefault": ["Ag-BeTa", "Ag-MOR", "Ag-USY", "Ag-ZSM-5", "Cu-FER", "Cu-MOR", "Cu-USY", "Cu-ZSM-5"]
+}

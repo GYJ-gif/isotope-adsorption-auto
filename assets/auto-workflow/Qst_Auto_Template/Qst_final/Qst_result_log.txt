@@ -1,0 +1,87 @@
+﻿=== Qst Calculation Started ===
+Dataset 1: T=273 K  D:\calculate\IAST-Qst\Qst_release\example\CO2_273K.csv
+  9 points
+Dataset 2: T=298 K  D:\calculate\IAST-Qst\Qst_release\example\CO2_298K.csv
+  9 points
+Auto fitting virial orders up to: a=5 b=2
+--- Candidate Orders ---
+  m=1 n=0  R²=0.982947  chi2=1.381586e+00  BIC=-3.753739e+01  penalty=7.053260e+00  score=-3.048413e+01  unstable=no
+  m=1 n=1  R²=0.985014  chi2=1.214107e+00  BIC=-3.697304e+01  penalty=4.986023e+00  score=-3.198702e+01  unstable=no
+  m=2 n=0  R²=0.991457  chi2=6.921386e-01  BIC=-4.708865e+01  penalty=0.000000e+00  score=-4.708865e+01  unstable=no
+  m=2 n=1  R²=0.996966  chi2=2.457930e-01  BIC=-6.283361e+01  penalty=0.000000e+00  score=-6.283361e+01  unstable=no
+  m=2 n=2  R²=0.997093  chi2=2.355390e-01  BIC=-6.071028e+01  penalty=0.000000e+00  score=-6.071028e+01  unstable=no
+  m=3 n=0  R²=0.992001  chi2=6.480414e-01  BIC=-4.538324e+01  penalty=0.000000e+00  score=-4.538324e+01  unstable=no
+  m=3 n=1  R²=0.998775  chi2=9.927401e-02  BIC=-7.626215e+01  penalty=0.000000e+00  score=-7.626215e+01  unstable=no
+  m=3 n=2  R²=0.999570  chi2=3.483230e-02  BIC=-9.222387e+01  penalty=0.000000e+00  score=-9.222387e+01  unstable=no
+  m=4 n=0  R²=0.992416  chi2=6.144251e-01  BIC=-4.345169e+01  penalty=0.000000e+00  score=-4.345169e+01  unstable=no
+  m=4 n=1  R²=0.998776  chi2=9.920171e-02  BIC=-7.338489e+01  penalty=0.000000e+00  score=-7.338489e+01  unstable=no
+  m=4 n=2  R²=0.999637  chi2=2.939913e-02  BIC=-9.238594e+01  penalty=0.000000e+00  score=-9.238594e+01  unstable=no
+  m=5 n=0  R²=0.992437  chi2=6.127313e-01  BIC=-4.061101e+01  penalty=0.000000e+00  score=-4.061101e+01  unstable=no
+  m=5 n=1  R²=0.998794  chi2=9.769863e-02  BIC=-7.076934e+01  penalty=0.000000e+00  score=-7.076934e+01  unstable=no
+  m=5 n=2  R²=0.999759  chi2=1.951677e-02  BIC=-9.687000e+01  penalty=0.000000e+00  score=-9.687000e+01  unstable=no
+Selected virial: m=5 n=2; done in 1 ms, iter=20, R² = 0.999759, conv=yes
+--- Parameters ---
+a_0 = -1.425441e+03
+a_1 = +2.978209e+02
+a_2 = -6.912620e+01
+a_3 = +5.398535e+00
+a_4 = -4.364835e-01
+a_5 = +1.411374e-02
+b_0 = +3.354528e+00
+b_1 = -6.474840e-01
+b_2 = +1.410883e-01
+--- Std Errors ---
+a_0 = 3.125e+00
+a_1 = 4.037e-01
+a_2 = 3.780e-02
+a_3 = 3.285e-03
+a_4 = 2.755e-04
+a_5 = 2.259e-05
+b_0 = 1.098e-02
+b_1 = 1.428e-03
+b_2 = 1.344e-04
+SVG: D:/calculate/IAST-Qst/Qst_release/Qst_final/Qst_result_Virial_Fit.svg, D:/calculate/IAST-Qst/Qst_release/Qst_final/Qst_result_Qst.svg
+CSV: D:/calculate/IAST-Qst/Qst_release/Qst_final/Qst_result_Qst.csv
+
+=== Qst vs Loading ===
+N=0.520000  Qst=10.7129 +/- 0.0260 kJ/mol
+N=0.795750  Qst=10.2235 +/- 0.0261 kJ/mol
+N=1.071500  Qst=9.8072 +/- 0.0262 kJ/mol
+N=1.347250  Qst=9.4600 +/- 0.0264 kJ/mol
+N=1.623000  Qst=9.1783 +/- 0.0266 kJ/mol
+N=1.898750  Qst=8.9587 +/- 0.0268 kJ/mol
+N=2.174500  Qst=8.7983 +/- 0.0270 kJ/mol
+N=2.450250  Qst=8.6947 +/- 0.0273 kJ/mol
+N=2.726000  Qst=8.6456 +/- 0.0276 kJ/mol
+N=3.001750  Qst=8.6491 +/- 0.0280 kJ/mol
+N=3.277500  Qst=8.7035 +/- 0.0284 kJ/mol
+N=3.553250  Qst=8.8075 +/- 0.0289 kJ/mol
+N=3.829000  Qst=8.9600 +/- 0.0294 kJ/mol
+N=4.104750  Qst=9.1601 +/- 0.0299 kJ/mol
+N=4.380500  Qst=9.4069 +/- 0.0306 kJ/mol
+N=4.656250  Qst=9.7000 +/- 0.0312 kJ/mol
+N=4.932000  Qst=10.0389 +/- 0.0319 kJ/mol
+N=5.207750  Qst=10.4234 +/- 0.0327 kJ/mol
+N=5.483500  Qst=10.8533 +/- 0.0336 kJ/mol
+N=5.759250  Qst=11.3284 +/- 0.0345 kJ/mol
+N=6.035000  Qst=11.8487 +/- 0.0355 kJ/mol
+N=6.310750  Qst=12.4143 +/- 0.0367 kJ/mol
+N=6.586500  Qst=13.0250 +/- 0.0379 kJ/mol
+N=6.862250  Qst=13.6809 +/- 0.0392 kJ/mol
+N=7.138000  Qst=14.3819 +/- 0.0406 kJ/mol
+N=7.413750  Qst=15.1280 +/- 0.0422 kJ/mol
+N=7.689500  Qst=15.9190 +/- 0.0439 kJ/mol
+N=7.965250  Qst=16.7545 +/- 0.0458 kJ/mol
+N=8.241000  Qst=17.6342 +/- 0.0479 kJ/mol
+N=8.516750  Qst=18.5576 +/- 0.0501 kJ/mol
+N=8.792500  Qst=19.5239 +/- 0.0526 kJ/mol
+N=9.068250  Qst=20.5322 +/- 0.0553 kJ/mol
+N=9.344000  Qst=21.5814 +/- 0.0582 kJ/mol
+N=9.619750  Qst=22.6702 +/- 0.0615 kJ/mol
+N=9.895500  Qst=23.7969 +/- 0.0650 kJ/mol
+N=10.171250  Qst=24.9597 +/- 0.0689 kJ/mol
+N=10.447000  Qst=26.1564 +/- 0.0731 kJ/mol
+N=10.722750  Qst=27.3845 +/- 0.0777 kJ/mol
+N=10.998500  Qst=28.6411 +/- 0.0827 kJ/mol
+N=11.274250  Qst=29.9230 +/- 0.0882 kJ/mol
+N=11.550000  Qst=31.2265 +/- 0.0941 kJ/mol
