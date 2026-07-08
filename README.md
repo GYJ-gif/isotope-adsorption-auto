@@ -1,6 +1,6 @@
 # isotope-adsorption-auto
 
-同位素 H2/D2 吸附数据自动化 Codex Skill。它把 `D:\calculate\Auto` 中的完整流程封装为可迁移 Skill，用于自动完成原始仪器 Excel 整理、IAST/Qst 计算、结果回写、Origin 作图和 PNG/OPJU 导出。
+同位素 H2/D2 吸附数据自动化 Codex Skill，用于自动完成原始仪器 Excel 整理、IAST/Qst 计算、结果回写、Origin 作图和 PNG/OPJU 导出。
 
 ## 功能
 
