@@ -1,33 +1,28 @@
-# Origin 自动作图模块
+# Origin Plotting Module
 
-本模块负责把样品 Excel/计算结果写入 Origin 模板，并导出三类图：
+This module reads sample Excel workbooks, writes adsorption/IAST/Qst data into the bundled Origin template, and exports OPJU/PNG figures. Paths are resolved relative to this module unless explicitly provided.
 
-- HD：吸附/脱附图
-- IAST：选择性图
-- Qst：等量吸附热图
-
-## 单独运行
+## Standalone Run
 
 ```powershell
-Set-Location D:\calculate\Auto\Origin_Auto_Template
-.\run_origin_workflow.ps1 -InputRoot D:\calculate\260706
+.\run_origin_workflow.ps1 -InputRoot <InputRoot>
 ```
 
-只处理部分样品：
+Selected samples:
 
 ```powershell
-.\run_origin_workflow.ps1 -InputRoot D:\calculate\260706 -Samples Ag-MOR,Cu-MOR
+.\run_origin_workflow.ps1 -InputRoot <InputRoot> -Samples <Sample1>,<Sample2>
 ```
 
-## 作图规则
+## Plotting Rules
 
-- 使用 `templates\template.opju` 作为模板。
-- 不新建图页，只使用模板已有：
+- Use `templates\template.opju` as the Origin template.
+- Use the existing graph pages in the template:
   - `/Folder1/吸附/HD`
   - `/Folder1/计算/IAST`
   - `/Folder1/计算/Qst`
-- 图标题替换为 `\b(<样品名>)`。
-- IAST: x = 0~106, y = 1~1.6。
-- Qst: x 从 0 开始，y 轴优先使用配置里的样品手动范围；新增样品如无配置，先自动缩放并提醒。
-- Qst 有负值时只跳过 Qst 图，不影响 HD 和 IAST。
-- PNG 统一尺寸导出，结果放回各样品文件夹。
+- Replace graph titles with `\b(<Sample>)`.
+- IAST axis defaults: x = 0-106, y = 1-1.6.
+- Qst starts at x = 0 and uses per-sample manual y-axis ranges when configured; otherwise it autos-scales and records a warning.
+- If Qst contains negative values, skip only the Qst plot; HD and IAST continue.
+- PNG outputs are written back to each sample folder.

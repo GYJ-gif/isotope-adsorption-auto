@@ -1,7 +1,7 @@
 ﻿=== Qst Calculation Started ===
-Dataset 1: T=273 K  D:\calculate\IAST-Qst\Qst_release\example\CO2_273K.csv
+Dataset 1: T=273 K  <ExampleData>\CO2_273K.csv
   9 points
-Dataset 2: T=298 K  D:\calculate\IAST-Qst\Qst_release\example\CO2_298K.csv
+Dataset 2: T=298 K  <ExampleData>\CO2_298K.csv
   9 points
 Auto fitting virial orders up to: a=5 b=2
 --- Candidate Orders ---
@@ -40,8 +40,8 @@ a_5 = 2.259e-05
 b_0 = 1.098e-02
 b_1 = 1.428e-03
 b_2 = 1.344e-04
-SVG: D:/calculate/IAST-Qst/Qst_release/Qst_final/Qst_result_Virial_Fit.svg, D:/calculate/IAST-Qst/Qst_release/Qst_final/Qst_result_Qst.svg
-CSV: D:/calculate/IAST-Qst/Qst_release/Qst_final/Qst_result_Qst.csv
+SVG: <ExampleOutput>\Qst_result_Virial_Fit.svg, <ExampleOutput>\Qst_result_Qst.svg
+CSV: <ExampleOutput>\Qst_result_Qst.csv
 
 === Qst vs Loading ===
 N=0.520000  Qst=10.7129 +/- 0.0260 kJ/mol

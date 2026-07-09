@@ -1,5 +1,6 @@
 param(
-    [string]$InputRoot = "D:\calculate\260706",
+    [Parameter(Mandatory = $true)]
+    [string]$InputRoot,
     [string[]]$Samples = @(),
     [switch]$PrepareRawInput,
     [string]$PreparedOutputRoot,
@@ -10,6 +11,7 @@ param(
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $config = Get-Content -LiteralPath (Join-Path $root "workflow_config.json") -Raw -Encoding UTF8 | ConvertFrom-Json
+$InputRoot = [System.IO.Path]::GetFullPath($InputRoot)
 
 if ($PrepareRawInput) {
     $prepareScript = Join-Path $root "run_prepare_ads_workbooks.ps1"

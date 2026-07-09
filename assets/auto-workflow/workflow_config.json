@@ -2,7 +2,7 @@
   "iastModule": "IAST_Auto_Template",
   "qstModule": "Qst_Auto_Template",
   "originModule": "Origin_Auto_Template",
-  "inputRootDefault": "D:/calculate/260706",
+  "inputRootDefault": "",
   "samplesDefault": [
     "Ag-BeTa",
     "Ag-MOR",
@@ -24,4 +24,3 @@
     "n2Policy": "N2 columns and plots are ignored."
   }
 }
-

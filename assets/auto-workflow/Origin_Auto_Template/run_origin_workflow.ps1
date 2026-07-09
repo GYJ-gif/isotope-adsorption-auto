@@ -1,11 +1,14 @@
 param(
-    [string]$InputRoot = "D:\calculate\260706",
-    [string]$ConfigPath = "D:\calculate\Auto\Origin_Auto_Template\workflow_config.json",
+    [Parameter(Mandatory = $true)]
+    [string]$InputRoot,
+    [string]$ConfigPath = (Join-Path $PSScriptRoot "workflow_config.json"),
     [string[]]$Samples = @(),
     [switch]$NoPng
 )
 
 $ErrorActionPreference = "Stop"
+$InputRoot = [System.IO.Path]::GetFullPath($InputRoot)
+$ConfigPath = [System.IO.Path]::GetFullPath($ConfigPath)
 
 function Is-Number($v) {
     if ($null -eq $v) { return $false }

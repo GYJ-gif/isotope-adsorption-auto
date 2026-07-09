@@ -1,6 +1,10 @@
 # isotope-adsorption-auto
 
-同位素 H2/D2 吸附数据自动化 Codex Skill，用于自动完成原始仪器 Excel 整理、IAST/Qst 计算、结果回写、Origin 作图和 PNG/OPJU 导出。
+同位素 H2/D2 吸附数据自动化 Codex Skill。部署本 Skill 后，只要目标电脑满足基础软件配置，就可以用简单指令完成原始 Excel 整理、IAST/Qst 计算、结果回写、Origin 作图和 PNG/OPJU 导出。
+
+## 迁移原则
+
+本 Skill 不依赖作者电脑上的固定路径。所有脚本和模板都随仓库打包，并通过 Skill 所在目录或脚本所在目录自动定位。运行时只需要提供你的输入数据目录；如需把流程复制到其他目录，也由 `-DestinationRoot` 显式指定。
 
 ## 功能
 
@@ -8,22 +12,22 @@
 - 从样品工作簿提取 H2/D2 在 77K、87K 的吸附数据。
 - 调用随 Skill 打包的 IAST 和 Qst 可执行程序完成计算。
 - 将 IAST/Qst CSV 结果回写到样品 Excel。
-- 基于 Origin 模板导出 `<样品>.opju`、`<样品>_HD.png`、`<样品>_IAST.png`、`<样品>_Qst.png`。
+- 基于随 Skill 打包的 Origin 模板导出 `.opju` 和 PNG 图片。
 - 当 Qst 出现负值时，仅跳过该样品 Qst 图导出，HD/IAST/OPJU 继续输出。
 
 ## 安装
 
-把仓库下载到 Codex 可发现的 skills 目录，例如：
+把仓库下载到任意 Codex 可读取的位置，例如你的 Codex skills 目录：
 
 ```powershell
-git clone https://github.com/GYJ-gif/isotope-adsorption-auto.git "$env:USERPROFILE\.codex\skills\isotope-adsorption-auto"
+git clone https://github.com/GYJ-gif/isotope-adsorption-auto.git <你的-skills-目录>\isotope-adsorption-auto
 ```
 
-也可以放在任意目录，然后在 Codex 中明确引用这个 Skill 路径。
+也可以放在任意目录，然后在 Codex 中明确引用该 Skill 路径。
 
-## 新电脑依赖
+## 新电脑基础配置
 
-运行完整流程前，请确认新电脑具备：
+运行完整流程前，请确认目标电脑具备：
 
 - Windows PowerShell。
 - Python 3，并安装 `openpyxl`。
@@ -31,20 +35,20 @@ git clone https://github.com/GYJ-gif/isotope-adsorption-auto.git "$env:USERPROFI
 - Origin 桌面版，并启用 `Origin.ApplicationSI` COM 自动化。
 - 本仓库内打包的 IAST/Qst `.exe`、Origin `.opju` 模板和脚本文件完整存在。
 
-Excel、Origin、Python 环境属于本机外部依赖，实际可用性需要在目标电脑上确认。
+Excel、Origin、Python 环境属于目标电脑外部依赖，实际可用性需要在目标电脑上确认。
 
 ## 推荐用法
 
 在 Codex 中可以直接说：
 
 ```text
-使用 $isotope-adsorption-auto 处理 D:\calculate\260708 的全部样品。
+使用 $isotope-adsorption-auto 处理 <输入根目录> 的全部样品。
 ```
 
 如果输入目录中直接放的是仪器导出的原始 `.xlsx`：
 
 ```text
-使用 $isotope-adsorption-auto 处理 D:\calculate\test 中的原始仪器 Excel，并完成全部计算和 Origin 作图。
+使用 $isotope-adsorption-auto 处理 <原始Excel目录> 中的原始仪器 Excel，并完成全部计算和 Origin 作图。
 ```
 
 ## 手动命令
@@ -52,38 +56,44 @@ Excel、Origin、Python 环境属于本机外部依赖，实际可用性需要�
 从 Skill 目录直接运行完整流程：
 
 ```powershell
-Set-Location "$env:USERPROFILE\.codex\skills\isotope-adsorption-auto"
-.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot D:\calculate\260708
+Set-Location <isotope-adsorption-auto目录>
+.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot <输入根目录>
 ```
 
 处理原始仪器导出 Excel：
 
 ```powershell
-.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot D:\calculate\test -PrepareRawInput
+.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot <原始Excel目录> -PrepareRawInput
 ```
 
 只处理指定样品：
 
 ```powershell
-.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot D:\calculate\260708 -Samples Ag-MOR,Cu-MOR
+.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot <输入根目录> -Samples <样品1>,<样品2>
 ```
 
 只计算 IAST/Qst，不运行 Origin：
 
 ```powershell
-.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot D:\calculate\260708 -SkipOrigin
+.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot <输入根目录> -SkipOrigin
 ```
 
 只运行 Origin，使用已有计算结果：
 
 ```powershell
-.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot D:\calculate\260708 -SkipCalculate
+.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -InputRoot <输入根目录> -SkipCalculate
 ```
 
-如需先把打包流程部署到固定目录：
+如需先把打包流程部署到某个工作目录：
 
 ```powershell
-.\scripts\Deploy-IsotopeAdsorptionAuto.ps1 -DestinationRoot D:\calculate\Auto
+.\scripts\Deploy-IsotopeAdsorptionAuto.ps1 -DestinationRoot <工作流目录>
+```
+
+之后可以指定该工作流目录运行：
+
+```powershell
+.\scripts\Invoke-IsotopeAdsorptionAuto.ps1 -WorkflowRoot <工作流目录> -InputRoot <输入根目录>
 ```
 
 ## 输入结构
@@ -120,11 +130,11 @@ Qst结果\
 <样品>_Qst.png
 ```
 
-运行报告位于：
+运行报告位于当前工作流目录下：
 
 ```text
-assets\auto-workflow\logs\full_workflow_report.txt
-assets\auto-workflow\Origin_Auto_Template\logs\workflow_report.csv
+logs\full_workflow_report.txt
+Origin_Auto_Template\logs\workflow_report.csv
 ```
 
 ## 文件说明

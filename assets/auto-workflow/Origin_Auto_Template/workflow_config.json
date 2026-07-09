@@ -1,6 +1,6 @@
 {
   "templateOpju": "templates/template.opju",
-  "inputRootDefault": "D:/calculate/260706",
+  "inputRootDefault": "",
   "originFolders": {
     "hd": "/Folder1/吸附/",
     "calc": "/Folder1/计算/"

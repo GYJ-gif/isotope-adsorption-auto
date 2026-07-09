@@ -1,28 +1,18 @@
-# Qst 自动化模块说明
+# Qst Automation Module
 
-本模块来自 `D:\calculate\Qst_release`，保留了 CLI、GUI、源码和示例。
+This module is bundled inside the skill and contains the Qst CLI/GUI executables, source files, and examples. It should normally be invoked by the top-level workflow or by `IAST_Auto_Template\run_iast_from_excel.ps1`.
 
-## 在全流程中的职责
+## Role In The Full Workflow
 
-Qst 计算通常由 `IAST_Auto_Template\run_iast_from_excel.ps1` 联动调用，不需要单独手动运行。
+1. Receive H2 or D2 adsorption CSV files at 77K and 87K.
+2. Fit the multi-temperature isotherms.
+3. Export Qst CSV/SVG outputs under each sample folder.
+4. Allow the top-level workflow to sync Qst CSV results back into `<Sample>.xlsx`.
 
-输入来自同一样品的 77K 和 87K Adsorption CSV：
+## Standalone Example
 
-- H2: `<样品名>-77K-H2.csv` + `<样品名>-87K-H2.csv`
-- D2: `<样品名>-77K-D2.csv` + `<样品名>-87K-D2.csv`
-
-输出到：
-
-```text
-<样品名>\Qst结果\H2
-<样品名>\Qst结果\D2
+```powershell
+.\qst_calc_cli.exe <Csv77K> <Csv87K> <OutputPrefix>
 ```
 
-## 负值规则
-
-如果后续 Origin 作图阶段读取到 Qst 数据中存在负值：
-
-- 只跳过该样品的 Qst 图；
-- HD 和 IAST 图继续生成；
-- 日志中写入提醒。
-
+Prefer the full workflow for production runs because it handles sample naming, folder layout, workbook sync, and Origin plotting.

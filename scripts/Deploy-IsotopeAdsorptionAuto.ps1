@@ -1,5 +1,6 @@
 param(
-    [string]$DestinationRoot = "D:\calculate\Auto",
+    [Parameter(Mandatory = $true)]
+    [string]$DestinationRoot,
     [switch]$Force
 )
 
