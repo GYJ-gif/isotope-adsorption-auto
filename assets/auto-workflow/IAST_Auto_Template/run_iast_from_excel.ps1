@@ -269,12 +269,14 @@ function Invoke-IastCalculation {
         [Parameter(Mandatory)][string]$H2Csv,
         [Parameter(Mandatory)][string]$D2Csv,
         [Parameter(Mandatory)][string]$OutputDirectory,
-        [Parameter(Mandatory)][string]$Prefix
+        [Parameter(Mandatory)][string]$Prefix,
+        [string]$D2Model = 'Auto',
+        [string]$H2Model = 'Auto'
     )
 
     $arguments = @(
-        '--batch', '--gas1', 'D2', '--csv1', $D2Csv, '--model1', 'Auto',
-        '--gas2', 'H2', '--csv2', $H2Csv, '--model2', 'Auto',
+        '--batch', '--gas1', 'D2', '--csv1', $D2Csv, '--model1', $D2Model,
+        '--gas2', 'H2', '--csv2', $H2Csv, '--model2', $H2Model,
         '--y1', '0.5', '--y2', '0.5',
         '--pressures', '1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100,105',
         '--output-dir', $OutputDirectory, '-o', $Prefix
@@ -288,6 +290,92 @@ function Invoke-IastCalculation {
     $process = [System.Diagnostics.Process]::Start($startInfo)
     $process.WaitForExit()
     if ($process.ExitCode -ne 0) { throw "IAST 程序运行失败，退出代码：$($process.ExitCode)" }
+}
+
+function Get-IastSelectedModels {
+    param([Parameter(Mandatory)][string]$LogPath)
+    $text = Get-Content -LiteralPath $LogPath -Raw -Encoding UTF8
+    $selected = @{}
+    foreach ($gas in @('D2', 'H2')) {
+        $match = [regex]::Match($text, "(?m)^\[\d+\]\s+$gas\s+-\s+requested\s+\S+,\s+selected\s+(SSL|DSL|SSLF|DSLF)\b")
+        if (-not $match.Success) { throw "无法从 IAST 日志确认 $gas 的 AUTO 模型：$LogPath" }
+        $selected[$gas] = $match.Groups[1].Value
+    }
+    return $selected
+}
+
+function Get-SimplerIastModel {
+    param([Parameter(Mandatory)][string]$Model)
+    switch ($Model) {
+        'DSLF' { return 'DSL' }
+        'DSL'  { return 'SSLF' }
+        'SSLF' { return 'SSL' }
+        default { return $null }
+    }
+}
+
+function Assert-IastFallbackFit {
+    param(
+        [Parameter(Mandatory)][string]$LogPath,
+        [Parameter(Mandatory)][hashtable]$ExpectedModels
+    )
+    $text = Get-Content -LiteralPath $LogPath -Raw -Encoding UTF8
+    foreach ($gas in @('D2', 'H2')) {
+        $expected = $ExpectedModels[$gas]
+        $match = [regex]::Match($text, "(?ms)^\[\d+\]\s+$gas\s+-\s+requested\s+$expected,\s+selected\s+(\S+).*?A1\s+([-+0-9.eE]+).*?B1\s+([-+0-9.eE]+).*?C1\s+([-+0-9.eE]+).*?A2\s+([-+0-9.eE]+).*?B2\s+([-+0-9.eE]+).*?C2\s+([-+0-9.eE]+).*?converged\s+=\s+(yes|no)")
+        if (-not $match.Success -or $match.Groups[1].Value -ne $expected -or $match.Groups[8].Value -ne 'yes') {
+            throw "$gas 的简化模型 $expected 未正常收敛或被自动替换；请人工检查模型参数。日志：$LogPath"
+        }
+        $activeGroups = switch ($expected) {
+            'SSL'  { @(2,3) }
+            'SSLF' { @(2,3,4) }
+            'DSL'  { @(2,3,5,6) }
+            default { @(2,3,4,5,6,7) }
+        }
+        foreach ($groupIndex in $activeGroups) {
+            $value = 0.0
+            if (-not [double]::TryParse($match.Groups[$groupIndex].Value, [System.Globalization.NumberStyles]::Float, [System.Globalization.CultureInfo]::InvariantCulture, [ref]$value) -or
+                [double]::IsNaN($value) -or [double]::IsInfinity($value) -or $value -le 0) {
+                throw "$gas 的简化模型 $expected 存在异常参数；请人工检查。日志：$LogPath"
+            }
+        }
+    }
+}
+
+function Invoke-IastFallbackWhenNeeded {
+    param(
+        [Parameter(Mandatory)][string]$Executable,
+        [Parameter(Mandatory)][string]$H2Csv,
+        [Parameter(Mandatory)][string]$D2Csv,
+        [Parameter(Mandatory)][string]$OutputDirectory,
+        [Parameter(Mandatory)][string]$Prefix
+    )
+    $resultPath = Join-Path $OutputDirectory "${Prefix}_Selectivity.csv"
+    $rows = @(Import-Csv -LiteralPath $resultPath)
+    $hasLowSelectivity = $false
+    foreach ($row in $rows) {
+        $properties = @($row.PSObject.Properties)
+        if ($properties.Count -lt 6) { throw "IAST 结果列数不足，无法检查选择性：$resultPath" }
+        $value = 0.0
+        if (-not [double]::TryParse([string]$properties[5].Value, [System.Globalization.NumberStyles]::Float, [System.Globalization.CultureInfo]::InvariantCulture, [ref]$value)) {
+            throw "IAST 选择性不是有效数字：$($properties[5].Value)"
+        }
+        if ($value -le 1.0) { $hasLowSelectivity = $true; break }
+    }
+    if (-not $hasLowSelectivity) { return }
+
+    $logPath = Join-Path $OutputDirectory "${Prefix}_log.txt"
+    $selected = Get-IastSelectedModels -LogPath $logPath
+    $simpler = @{
+        D2 = Get-SimplerIastModel $selected.D2
+        H2 = Get-SimplerIastModel $selected.H2
+    }
+    if (-not $simpler.D2 -or -not $simpler.H2) {
+        throw "IAST 选择性出现小于或等于 1，但至少一个 AUTO 模型已是最简单的 SSL；请人工检查模型参数。日志：$logPath"
+    }
+    Write-Warning "IAST 选择性出现小于或等于 1，改用更简单模型重算：D2 $($selected.D2)->$($simpler.D2)，H2 $($selected.H2)->$($simpler.H2)"
+    Invoke-IastCalculation -Executable $Executable -H2Csv $H2Csv -D2Csv $D2Csv -OutputDirectory $OutputDirectory -Prefix $Prefix -D2Model $simpler.D2 -H2Model $simpler.H2
+    Assert-IastFallbackFit -LogPath $logPath -ExpectedModels $simpler
 }
 
 function Invoke-QstCalculation {
@@ -437,6 +525,7 @@ if ($Mode -in @('Calculate', 'All')) {
         [System.IO.Directory]::CreateDirectory($outputDirectory) | Out-Null
         $prefix = "${workbookName}-${temperatureValue}K-IAST"
         Invoke-IastCalculation -Executable $IastExe -H2Csv $h2Csv -D2Csv $d2Csv -OutputDirectory $outputDirectory -Prefix $prefix
+        Invoke-IastFallbackWhenNeeded -Executable $IastExe -H2Csv $h2Csv -D2Csv $d2Csv -OutputDirectory $outputDirectory -Prefix $prefix
 
         $expectedFiles = @(
             "${prefix}_Selectivity.csv", "${prefix}_log.txt", "${prefix}_Exp_isotherms.svg",
