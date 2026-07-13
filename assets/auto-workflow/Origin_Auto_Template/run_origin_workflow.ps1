@@ -1,12 +1,13 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$InputRoot,
-    [string]$ConfigPath = (Join-Path $PSScriptRoot "workflow_config.json"),
+    [string]$ConfigPath,
     [string[]]$Samples = @(),
     [switch]$NoPng
 )
 
 $ErrorActionPreference = "Stop"
+if (-not $ConfigPath) { $ConfigPath = Join-Path $PSScriptRoot "workflow_config.json" }
 $InputRoot = [System.IO.Path]::GetFullPath($InputRoot)
 $ConfigPath = [System.IO.Path]::GetFullPath($ConfigPath)
 
@@ -203,22 +204,16 @@ try {
             $title = Escape-LT $config.titleFormat.Replace('{sample}', $sample)
             $w = [int]$config.pngExport.uniformWidthPx
             $doPng = $config.pngExport.enabled -and -not $NoPng
-            $hd = $config.axes.HD; $ia = $config.axes.IAST; $qa = $config.axes.Qst
+            $hdAxisCmd = 'layer -a;'
+            $iastAxisCmd = 'layer -a;'
 
-            $cmd = "pe_cd $($config.originFolders.hd); win -a HD; Text.text$=`"$title`"; layer.x.from=$($hd.xFrom); layer.x.to=$($hd.xTo); layer.y.from=$($hd.yFrom); layer.y.to=$($hd.yTo); doc -uw;"
+            $cmd = "pe_cd $($config.originFolders.hd); win -a HD; Text.text$=`"$title`"; $hdAxisCmd doc -uw;"
             if ($doPng) { $cmd += " expGraph type:=png path:=`"$sampleDir`" filename:=`"${sample}_HD`" tr1.unit:=2 tr1.width:=$w;" }
-            $cmd += " pe_cd $($config.originFolders.calc); win -a IAST; Text2.text$=`"$title`"; layer.x.from=$($ia.xFrom); layer.x.to=$($ia.xTo); layer.y.from=$($ia.yFrom); layer.y.to=$($ia.yTo); doc -uw;"
+            $cmd += " pe_cd $($config.originFolders.calc); win -a IAST; Text2.text$=`"$title`"; $iastAxisCmd doc -uw;"
             if ($doPng) { $cmd += " expGraph type:=png path:=`"$sampleDir`" filename:=`"${sample}_IAST`" tr1.unit:=2 tr1.width:=$w;" }
             if (-not $skipQst) {
-                $yrProp = $qa.manualYBySample.PSObject.Properties[$sample]
-                if ($yrProp) {
-                    $yr = @($yrProp.Value)
-                    $ycmd = "layer.y.from=$($yr[0]); layer.y.to=$($yr[1]);"
-                } else {
-                    $ycmd = "layer.y.rescale=1;"
-                    $warnings.Add("No manual Qst y-axis range configured; used autoscale.")
-                }
-                $cmd += " pe_cd $($config.originFolders.calc); win -a Qst; Text2.text$=`"$title`"; layer.x.from=$($qa.xFrom); layer.x.to=$($qa.xTo); $ycmd doc -uw;"
+                $ycmd = 'layer -a;'
+                $cmd += " pe_cd $($config.originFolders.calc); win -a Qst; Text2.text$=`"$title`"; $ycmd doc -uw;"
                 if ($doPng) { $cmd += " expGraph type:=png path:=`"$sampleDir`" filename:=`"${sample}_Qst`" tr1.unit:=2 tr1.width:=$w;" }
             }
             $cmd += " save -dix $out;"

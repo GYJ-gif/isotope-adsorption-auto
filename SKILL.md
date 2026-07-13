@@ -1,6 +1,6 @@
 ---
 name: isotope-adsorption-auto
-description: Automate isotope adsorption data workflows for H2/D2 materials: prepare raw instrument XLSX files into per-sample workbooks, run bundled IAST and Qst calculations, sync results back to Excel, and generate Origin OPJU/PNG figures. Use when the user asks to process isotope adsorption data folders, run the full adsorption automation, calculate IAST/Qst, or create Origin plots from the packaged workflow templates.
+description: Automate isotope adsorption data workflows for H2/D2 materials: prepare raw instrument XLSX or fallback CSV files into per-sample workbooks, run bundled IAST and Qst calculations, sync results back to Excel, and generate Origin OPJU/PNG figures. Use when the user asks to process isotope adsorption data folders, run the full adsorption automation, calculate IAST/Qst, or create Origin plots from the packaged workflow templates.
 ---
 
 # Isotope Adsorption Automation
@@ -10,7 +10,7 @@ description: Automate isotope adsorption data workflows for H2/D2 materials: pre
 Use this skill to run the packaged H2/D2 isotope adsorption automation in `assets/auto-workflow/`. Do not assume any fixed local path from the machine that created this skill; locate bundled files relative to the skill directory or script directory, and require the user to provide the input data directory.
 
 1. Confirm the input type:
-   - Raw instrument export folder containing `.xlsx` files: use `-PrepareRawInput`.
+   - Raw instrument export folder containing `.xlsx` and/or fallback `.csv` files: use `-PrepareRawInput`.
    - Already prepared folder shaped as `<InputRoot>/<Sample>/<Sample>.xlsx`: omit `-PrepareRawInput`.
 2. Run the full workflow from the skill directory:
    ```powershell
@@ -41,7 +41,9 @@ Each workbook should contain H2/D2 adsorption data at 77K and 87K. The default o
 3. H2-87K
 4. D2-87K
 
-Raw instrument `.xlsx` filenames must include sample name plus one of `77K-H2`, `77K-D2`, `87K-H2`, or `87K-D2`. The preparation step groups those files into per-sample workbooks.
+Raw instrument `.xlsx` filenames must include sample name plus one of `77K-H2`, `77K-D2`, `87K-H2`, or `87K-D2`. When an XLSX is absent, a two-column `.csv` with the same naming convention is accepted as fallback input. XLSX takes precedence when both formats exist.
+
+Origin always autoscales the full graph layer for HD, IAST, and Qst so all plotted points remain visible. AUTO IAST fitting checks calculated selectivity and, when any value is less than or equal to 1, retries with valid lower-parameter models. Invalid fallback parameters stop calculation and require manual review.
 
 ## Common Commands
 

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import math
 import re
 from collections import defaultdict
 from datetime import datetime
@@ -116,6 +118,44 @@ def extract_isotherm_rows(path: Path) -> dict[str, list[tuple[float, float]]]:
         workbook.close()
 
 
+def extract_csv_rows(path: Path) -> dict[str, list[tuple[float, float]]]:
+    adsorption: list[tuple[float, float]] = []
+    desorption: list[tuple[float, float]] = []
+    previous_pressure = None
+    phase = "adsorption"
+
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        rows = list(csv.reader(handle))
+
+    for row_number, row in enumerate(rows, start=1):
+        if len(row) < 2:
+            continue
+        try:
+            pressure = float(row[0].strip())
+            loading = float(row[1].strip())
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(pressure) or not math.isfinite(loading):
+            raise ValueError(f"CSV 第 {row_number} 行出现非有限数值")
+        if pressure < 0 or loading < 0:
+            raise ValueError(f"CSV 第 {row_number} 行出现负值")
+        if previous_pressure is not None and pressure <= previous_pressure:
+            phase = "desorption"
+        target = adsorption if phase == "adsorption" else desorption
+        target.append((pressure, loading))
+        previous_pressure = pressure
+
+    if len(adsorption) < 10:
+        raise ValueError(f"CSV 吸附段数据点少于 10 个：{len(adsorption)}")
+    return {"adsorption": adsorption, "desorption": desorption}
+
+
+def extract_source_rows(path: Path) -> dict[str, list[tuple[float, float]]]:
+    if path.suffix.lower() == ".csv":
+        return extract_csv_rows(path)
+    return extract_isotherm_rows(path)
+
+
 def write_sample_workbook(sample: str, datasets: dict[tuple[str, str], dict[str, list[tuple[float, float]]]], output_path: Path) -> None:
     workbook = Workbook()
     sheet = workbook.active
@@ -163,16 +203,19 @@ def default_output_root(input_root: Path) -> Path:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Prepare adsorption workbooks from raw instrument XLSX files.")
-    parser.add_argument("--input-root", required=True, type=Path, help="包含原始 .xlsx 文件的文件夹")
+    parser = argparse.ArgumentParser(description="Prepare adsorption workbooks from raw XLSX or fallback CSV files.")
+    parser.add_argument("--input-root", required=True, type=Path, help="包含原始 .xlsx 和/或兜底 .csv 文件的文件夹")
     parser.add_argument("--output-root", type=Path, help="输出日期文件夹；默认在输入文件夹上一级按当天日期命名")
     args = parser.parse_args()
 
     input_root = args.input_root.resolve()
     output_root = (args.output_root or default_output_root(input_root)).resolve()
-    files = sorted(path for path in input_root.glob("*.xlsx") if not path.name.startswith("~$"))
+    files = sorted(
+        path for path in input_root.iterdir()
+        if path.is_file() and path.suffix.lower() in {".xlsx", ".csv"} and not path.name.startswith("~$")
+    )
     if not files:
-        raise SystemExit(f"未找到原始 .xlsx 文件：{input_root}")
+        raise SystemExit(f"未找到原始 .xlsx 或 .csv 文件：{input_root}")
 
     grouped: dict[str, dict[tuple[str, str], Path]] = defaultdict(dict)
     skipped: list[str] = []
@@ -180,7 +223,15 @@ def main() -> int:
         try:
             sample, temperature, gas = parse_source_name(path)
             key = (temperature, gas)
-            if key in grouped[sample]:
+            existing = grouped[sample].get(key)
+            if existing and existing.suffix.lower() == ".xlsx" and path.suffix.lower() == ".csv":
+                skipped.append(f"{path.name}\tSKIP\tXLSX preferred; CSV kept as fallback only")
+                continue
+            if existing and existing.suffix.lower() == ".csv" and path.suffix.lower() == ".xlsx":
+                skipped.append(f"{existing.name}\tSKIP\tXLSX preferred; CSV kept as fallback only")
+                grouped[sample][key] = path
+                continue
+            if existing:
                 raise ValueError(f"{sample} 的 {temperature}K-{gas} 数据重复")
             grouped[sample][key] = path
         except Exception as exc:
@@ -195,7 +246,7 @@ def main() -> int:
             if not source:
                 continue
             try:
-                datasets[key] = extract_isotherm_rows(source)
+                datasets[key] = extract_source_rows(source)
                 ads_count = len(datasets[key]["adsorption"])
                 des_count = len(datasets[key]["desorption"])
                 report_lines.append(f"{sample}\t{key[0]}K-{key[1]}\tOK\t{source.name}\t{ads_count} adsorption points; {des_count} desorption points")
