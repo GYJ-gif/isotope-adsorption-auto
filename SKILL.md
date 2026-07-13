@@ -43,7 +43,7 @@ Each workbook should contain H2/D2 adsorption data at 77K and 87K. The default o
 
 Raw instrument `.xlsx` filenames must include sample name plus one of `77K-H2`, `77K-D2`, `87K-H2`, or `87K-D2`. When an XLSX is absent, a two-column `.csv` with the same naming convention is accepted as fallback input. XLSX takes precedence when both formats exist.
 
-Origin keeps configured axes only when every plotted point fits inside them; otherwise that graph is autoscaled so all points remain visible. AUTO IAST fitting checks calculated selectivity and, when any value is less than or equal to 1, retries with valid lower-parameter models. Invalid fallback parameters stop calculation and require manual review.
+Origin always autoscales the full graph layer for HD, IAST, and Qst so all plotted points remain visible. AUTO IAST fitting checks calculated selectivity and, when any value is less than or equal to 1, retries with valid lower-parameter models. Invalid fallback parameters stop calculation and require manual review.
 
 ## Common Commands
 

@@ -98,41 +98,6 @@ function Put-MultiCols([ref]$tableRef, [int]$startCol, [object[]]$rows) {
     }
 }
 
-function Get-PairBounds([object[]]$PairSets) {
-    $xs = [System.Collections.Generic.List[double]]::new()
-    $ys = [System.Collections.Generic.List[double]]::new()
-    foreach ($pairs in $PairSets) {
-        foreach ($pair in @($pairs)) {
-            if ($null -ne $pair -and $pair.Count -ge 2) {
-                $xs.Add([double]$pair[0]); $ys.Add([double]$pair[1])
-            }
-        }
-    }
-    if ($xs.Count -eq 0) { return $null }
-    return [pscustomobject]@{
-        XMin = ($xs | Measure-Object -Minimum).Minimum; XMax = ($xs | Measure-Object -Maximum).Maximum
-        YMin = ($ys | Measure-Object -Minimum).Minimum; YMax = ($ys | Measure-Object -Maximum).Maximum
-    }
-}
-
-function Get-MultiColumnBounds([object[]]$Rows, [int]$XIndex, [int]$YIndex) {
-    $pairs = foreach ($row in @($Rows)) {
-        if ($row.Count -gt [Math]::Max($XIndex, $YIndex)) { ,@([double]$row[$XIndex], [double]$row[$YIndex]) }
-    }
-    return Get-PairBounds @($pairs)
-}
-
-function Get-AxisCommand($Bounds, $AxisConfig, [string]$GraphName, $Warnings) {
-    if ($null -eq $Bounds) { return 'layer -a;' }
-    $conflict = $Bounds.XMin -lt [double]$AxisConfig.xFrom -or $Bounds.XMax -gt [double]$AxisConfig.xTo -or
-        $Bounds.YMin -lt [double]$AxisConfig.yFrom -or $Bounds.YMax -gt [double]$AxisConfig.yTo
-    if ($conflict) {
-        $Warnings.Add("$GraphName data exceed configured axes; autoscale used to show all points.")
-        return 'layer -a;'
-    }
-    return "layer.x.from=$($AxisConfig.xFrom); layer.x.to=$($AxisConfig.xTo); layer.y.from=$($AxisConfig.yFrom); layer.y.to=$($AxisConfig.yTo);"
-}
-
 function As-IntArray($v) { return @($v | ForEach-Object { [int]$_ }) }
 function Escape-LT([string]$s) { return $s.Replace('"', '\"') }
 function Get-WorksheetByAliases($workbook, [string[]]$names) {
@@ -205,13 +170,6 @@ try {
 
                 $iast77 = Read-MultiCols $iastWs (As-IntArray $config.iastColumns."77K") 3 22
                 $iast87 = Read-MultiCols $iastWs (As-IntArray $config.iastColumns."87K") 3 22
-                $hdBounds = Get-PairBounds @($h277[0],$h277[1],$d277[0],$d277[1],$h287[0],$h287[1],$d287[0],$d287[1])
-                $iastBounds77 = Get-MultiColumnBounds $iast77 0 5
-                $iastBounds87 = Get-MultiColumnBounds $iast87 0 5
-                $iastBounds = Get-PairBounds @(
-                    $(if ($iastBounds77) { @(@($iastBounds77.XMin,$iastBounds77.YMin),@($iastBounds77.XMax,$iastBounds77.YMax)) }),
-                    $(if ($iastBounds87) { @(@($iastBounds87.XMin,$iastBounds87.YMin),@($iastBounds87.XMax,$iastBounds87.YMax)) })
-                )
             }
             finally { $wb.Close($false) }
 
@@ -246,30 +204,15 @@ try {
             $title = Escape-LT $config.titleFormat.Replace('{sample}', $sample)
             $w = [int]$config.pngExport.uniformWidthPx
             $doPng = $config.pngExport.enabled -and -not $NoPng
-            $hd = $config.axes.HD; $ia = $config.axes.IAST; $qa = $config.axes.Qst
-            $hdAxisCmd = Get-AxisCommand $hdBounds $hd 'HD' $warnings
-            $iastAxisCmd = Get-AxisCommand $iastBounds $ia 'IAST' $warnings
+            $hdAxisCmd = 'layer -a;'
+            $iastAxisCmd = 'layer -a;'
 
             $cmd = "pe_cd $($config.originFolders.hd); win -a HD; Text.text$=`"$title`"; $hdAxisCmd doc -uw;"
             if ($doPng) { $cmd += " expGraph type:=png path:=`"$sampleDir`" filename:=`"${sample}_HD`" tr1.unit:=2 tr1.width:=$w;" }
             $cmd += " pe_cd $($config.originFolders.calc); win -a IAST; Text2.text$=`"$title`"; $iastAxisCmd doc -uw;"
             if ($doPng) { $cmd += " expGraph type:=png path:=`"$sampleDir`" filename:=`"${sample}_IAST`" tr1.unit:=2 tr1.width:=$w;" }
             if (-not $skipQst) {
-                $yrProp = $qa.manualYBySample.PSObject.Properties[$sample]
-                if ($yrProp) {
-                    $yr = @($yrProp.Value)
-                    $qstBounds = Get-PairBounds @($h2q.Rows, $d2q.Rows)
-                    $qstConflict = $qstBounds -and ($qstBounds.XMin -lt [double]$qa.xFrom -or $qstBounds.XMax -gt [double]$qa.xTo -or $qstBounds.YMin -lt [double]$yr[0] -or $qstBounds.YMax -gt [double]$yr[1])
-                    if ($qstConflict) {
-                        $ycmd = 'layer -a;'
-                        $warnings.Add('Qst data exceed configured axes; autoscale used to show all points.')
-                    } else {
-                        $ycmd = "layer.x.from=$($qa.xFrom); layer.x.to=$($qa.xTo); layer.y.from=$($yr[0]); layer.y.to=$($yr[1]);"
-                    }
-                } else {
-                    $ycmd = "layer -a;"
-                    $warnings.Add("No manual Qst y-axis range configured; used autoscale.")
-                }
+                $ycmd = 'layer -a;'
                 $cmd += " pe_cd $($config.originFolders.calc); win -a Qst; Text2.text$=`"$title`"; $ycmd doc -uw;"
                 if ($doPng) { $cmd += " expGraph type:=png path:=`"$sampleDir`" filename:=`"${sample}_Qst`" tr1.unit:=2 tr1.width:=$w;" }
             }
