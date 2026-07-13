@@ -123,12 +123,12 @@ function Get-MultiColumnBounds([object[]]$Rows, [int]$XIndex, [int]$YIndex) {
 }
 
 function Get-AxisCommand($Bounds, $AxisConfig, [string]$GraphName, $Warnings) {
-    if ($null -eq $Bounds) { return 'layer.x.rescale=1; layer.y.rescale=1;' }
+    if ($null -eq $Bounds) { return 'layer -a;' }
     $conflict = $Bounds.XMin -lt [double]$AxisConfig.xFrom -or $Bounds.XMax -gt [double]$AxisConfig.xTo -or
         $Bounds.YMin -lt [double]$AxisConfig.yFrom -or $Bounds.YMax -gt [double]$AxisConfig.yTo
     if ($conflict) {
         $Warnings.Add("$GraphName data exceed configured axes; autoscale used to show all points.")
-        return 'layer.x.rescale=1; layer.y.rescale=1;'
+        return 'layer -a;'
     }
     return "layer.x.from=$($AxisConfig.xFrom); layer.x.to=$($AxisConfig.xTo); layer.y.from=$($AxisConfig.yFrom); layer.y.to=$($AxisConfig.yTo);"
 }
@@ -261,13 +261,13 @@ try {
                     $qstBounds = Get-PairBounds @($h2q.Rows, $d2q.Rows)
                     $qstConflict = $qstBounds -and ($qstBounds.XMin -lt [double]$qa.xFrom -or $qstBounds.XMax -gt [double]$qa.xTo -or $qstBounds.YMin -lt [double]$yr[0] -or $qstBounds.YMax -gt [double]$yr[1])
                     if ($qstConflict) {
-                        $ycmd = 'layer.x.rescale=1; layer.y.rescale=1;'
+                        $ycmd = 'layer -a;'
                         $warnings.Add('Qst data exceed configured axes; autoscale used to show all points.')
                     } else {
                         $ycmd = "layer.x.from=$($qa.xFrom); layer.x.to=$($qa.xTo); layer.y.from=$($yr[0]); layer.y.to=$($yr[1]);"
                     }
                 } else {
-                    $ycmd = "layer.x.rescale=1; layer.y.rescale=1;"
+                    $ycmd = "layer -a;"
                     $warnings.Add("No manual Qst y-axis range configured; used autoscale.")
                 }
                 $cmd += " pe_cd $($config.originFolders.calc); win -a Qst; Text2.text$=`"$title`"; $ycmd doc -uw;"
