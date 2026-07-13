@@ -322,7 +322,7 @@ function Assert-IastFallbackFit {
     $text = Get-Content -LiteralPath $LogPath -Raw -Encoding UTF8
     foreach ($gas in @('D2', 'H2')) {
         $expected = $ExpectedModels[$gas]
-        $match = [regex]::Match($text, "(?ms)^\[\d+\]\s+$gas\s+-\s+requested\s+$expected,\s+selected\s+(\S+).*?A1\s+([-+0-9.eE]+).*?B1\s+([-+0-9.eE]+).*?C1\s+([-+0-9.eE]+).*?A2\s+([-+0-9.eE]+).*?B2\s+([-+0-9.eE]+).*?C2\s+([-+0-9.eE]+).*?converged\s+=\s+(yes|no)")
+        $match = [regex]::Match($text, "(?ms)^\[\d+\]\s+$gas\s+-\s+requested\s+$expected,\s+selected\s+(DSLF|SSLF|DSL|SSL)\b.*?A1\s+([-+0-9.eE]+).*?B1\s+([-+0-9.eE]+).*?C1\s+([-+0-9.eE]+).*?A2\s+([-+0-9.eE]+).*?B2\s+([-+0-9.eE]+).*?C2\s+([-+0-9.eE]+).*?converged\s+=\s+(yes|no)")
         if (-not $match.Success -or $match.Groups[1].Value -ne $expected -or $match.Groups[8].Value -ne 'yes') {
             throw "$gas 的简化模型 $expected 未正常收敛或被自动替换；请人工检查模型参数。日志：$LogPath"
         }
