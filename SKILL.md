@@ -96,7 +96,7 @@ Check these before running on a new computer:
 - Python 3 with `openpyxl` available. The script first tries the bundled Codex runtime Python when it can be discovered under the current user profile, then falls back to `python`.
 - Microsoft Excel desktop application for Origin automation input reading.
 - Origin desktop application with `Origin.ApplicationSI` COM automation available.
-- The packaged IAST/Qst `.exe` files in `assets/auto-workflow/IAST_Auto_Template` and `assets/auto-workflow/Qst_Auto_Template`.
+- IAST/Qst programs built from `assets/auto-workflow/*/source` (or downloaded from a GitHub Release) and placed next to the workflow scripts: `IAST_Auto_Template/iast_calc_gui.exe` and `Qst_Auto_Template/qst_calc_cli.exe`. Binaries are not stored in git.
 
 Do not claim Excel, Origin, or Python dependencies are installed unless verified on that machine.
 
@@ -104,8 +104,8 @@ Do not claim Excel, Origin, or Python dependencies are installed unless verified
 
 - `assets/auto-workflow/prepare_ads_workbooks.py`: Convert raw instrument XLSX files into per-sample workbooks.
 - `assets/auto-workflow/run_full_workflow.ps1`: Orchestrate prepare, IAST/Qst calculation, result sync, and Origin export.
-- `assets/auto-workflow/IAST_Auto_Template/`: IAST executable, extraction script, source, and examples.
-- `assets/auto-workflow/Qst_Auto_Template/`: Qst executables, source, and examples.
+- `assets/auto-workflow/IAST_Auto_Template/`: IAST extraction script, C++ source, and examples.
+- `assets/auto-workflow/Qst_Auto_Template/`: Qst C++ source and examples.
 - `assets/auto-workflow/Origin_Auto_Template/templates/template.opju`: Origin plotting template.
 - `references/workflow-guide.md`: Detailed execution notes, file inventory, and troubleshooting.
 

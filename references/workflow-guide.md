@@ -50,18 +50,7 @@ The scripts also accept several legacy aliases defined in the packaged Python an
 
 ## Default Samples
 
-The default configured sample list is:
-
-```text
-Ag-BeTa
-Ag-MOR
-Ag-USY
-Ag-ZSM-5
-Cu-FER
-Cu-MOR
-Cu-USY
-Cu-ZSM-5
-```
+`workflow_config.json` ships with placeholder ids `Sample-A` through `Sample-H`. Replace that list, or pass `-Samples`, with the folder names in your input directory.
 
 Pass `-Samples` to process a smaller set.
 

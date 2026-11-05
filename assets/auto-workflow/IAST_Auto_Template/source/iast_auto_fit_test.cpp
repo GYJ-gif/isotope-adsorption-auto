@@ -8,6 +8,20 @@
 int main() {
     using namespace iast;
 
+    const double ssl_site[6] = {5.0, 0.2, 1.0, 0.0, 1.0, 1.0};
+    const double p = 1.0;
+    const double expected_uptake = (5.0 * 0.2 * p) / (1.0 + 0.2 * p);
+    const double expected_pi = (5.0 / 1.0) * std::log(1.0 + 0.2 * p);
+    assert(std::abs(uptake(p, ssl_site) - expected_uptake) < 1e-12);
+    assert(std::abs(spreading_pressure(p, ssl_site) - expected_pi) < 1e-12);
+
+    std::vector<double> identical(ssl_site, ssl_site + 6);
+    auto rows = binary_iast(0.5, {10.0}, identical, identical);
+    assert(rows.size() == 1);
+    assert(std::abs(rows[0].x1 - 0.5) < 1e-6);
+    assert(std::abs(rows[0].selectivity - 1.0) < 1e-6);
+    assert(std::abs(rows[0].sep_potential) < 1e-6);
+
     std::vector<double> pressure{0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0};
     std::vector<double> uptake_values;
     std::vector<double> ssl_params{5.0, 0.2, 1.0, 1.0, 1.0, 1.0};

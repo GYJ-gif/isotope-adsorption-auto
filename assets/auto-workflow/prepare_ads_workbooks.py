@@ -12,10 +12,9 @@ from openpyxl.utils import get_column_letter
 
 ORDER = (("77", "H2"), ("77", "D2"), ("87", "H2"), ("87", "D2"))
 MOLAR_VOLUME_STP_CM3_PER_MMOL = 22.414
-SAMPLE_RENAMES = {
-    "Ag-beta": "Ag-BeTa",
-    "Cu-FMR": "Cu-FER",
-}
+# Optional map from a raw instrument filename stem to the sample folder name.
+# Example: {"Instrument-Alias": "Sample-A"}
+SAMPLE_RENAMES: dict[str, str] = {}
 
 
 def parse_source_name(path: Path) -> tuple[str, str, str]:

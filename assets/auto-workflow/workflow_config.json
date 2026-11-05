@@ -4,14 +4,14 @@
   "originModule": "Origin_Auto_Template",
   "inputRootDefault": "",
   "samplesDefault": [
-    "Ag-BeTa",
-    "Ag-MOR",
-    "Ag-USY",
-    "Ag-ZSM-5",
-    "Cu-FER",
-    "Cu-MOR",
-    "Cu-USY",
-    "Cu-ZSM-5"
+    "Sample-A",
+    "Sample-B",
+    "Sample-C",
+    "Sample-D",
+    "Sample-E",
+    "Sample-F",
+    "Sample-G",
+    "Sample-H"
   ],
   "steps": {
     "extractAdsorptionCsv": true,
@@ -21,6 +21,7 @@
   },
   "notes": {
     "qstNegativePolicy": "If Qst values are negative, warn and skip Qst plot only.",
-    "n2Policy": "N2 columns and plots are ignored."
+    "n2Policy": "N2 columns and plots are ignored.",
+    "sampleIds": "samplesDefault is a placeholder list. Replace it, or pass -Samples, with your own folder names."
   }
 }

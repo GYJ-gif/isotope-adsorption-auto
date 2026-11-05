@@ -2,6 +2,8 @@
 
 **版本**：v1.4.1  |  **作者**：袁大强  |  **日期**：2026-06-16
 
+可执行文件不进入 Git。在 `source/` 中运行 `build_gui.bat`（Windows GUI），或在仓库根目录运行 `scripts/build_cpp.sh` / `scripts/build_cpp.ps1` 编译命令行程序。发布版二进制计划通过 GitHub Releases 提供，说明见仓库根目录 README。
+
 ---
 
 ## 1. 软件简介

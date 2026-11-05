@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run tests
+        run: python -m pytest -q
+
+  cpp-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build CLI and unit tests
+        run: bash scripts/build_cpp.sh "${{ runner.temp }}/cpp"
+      - name: Run unit tests and CLI smoke checks
+        working-directory: ${{ runner.temp }}
+        run: |
+          set -euo pipefail
+          ./cpp/iast_auto_fit_test
+          ./cpp/qst_auto_fit_test
+          ./cpp/iast_calc --help >/dev/null
+          ./cpp/qst_calc --help >/dev/null
+          ./cpp/qst_calc \
+            --temp1 273 --csv1 "${GITHUB_WORKSPACE}/assets/auto-workflow/Qst_Auto_Template/example/CO2_273K.csv" \
+            --temp2 298 --csv2 "${GITHUB_WORKSPACE}/assets/auto-workflow/Qst_Auto_Template/example/CO2_298K.csv" \
+            --temp3 313 --csv3 "${GITHUB_WORKSPACE}/assets/auto-workflow/Qst_Auto_Template/example/CO2_313K.csv" \
+            --max-a 2 --max-b 1 \
+            --output-dir "${{ runner.temp }}/qst-smoke" \
+            -o smoke
+          test -s "${{ runner.temp }}/qst-smoke/smoke_Qst.csv"
+
+  cpp-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build CLI, GUI, and unit tests
+        shell: pwsh
+        run: ./scripts/build_cpp.ps1 -OutDir "${{ runner.temp }}/cpp"
+      - name: Run unit tests
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: |
+          & "${{ runner.temp }}/cpp/iast_auto_fit_test.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "${{ runner.temp }}/cpp/qst_auto_fit_test.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "${{ runner.temp }}/cpp/iast_calc.exe" --help | Out-Null
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "${{ runner.temp }}/cpp/qst_calc.exe" --help | Out-Null
+          exit $LASTEXITCODE
