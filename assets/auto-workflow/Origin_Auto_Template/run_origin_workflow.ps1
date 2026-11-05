@@ -210,13 +210,18 @@ try {
             $cmd += " pe_cd $($config.originFolders.calc); win -a IAST; Text2.text$=`"$title`"; layer.x.from=$($ia.xFrom); layer.x.to=$($ia.xTo); layer.y.from=$($ia.yFrom); layer.y.to=$($ia.yTo); doc -uw;"
             if ($doPng) { $cmd += " expGraph type:=png path:=`"$sampleDir`" filename:=`"${sample}_IAST`" tr1.unit:=2 tr1.width:=$w;" }
             if (-not $skipQst) {
-                $yrProp = $qa.manualYBySample.PSObject.Properties[$sample]
+                $yrProp = $null
+                if ($qa.manualYBySample) {
+                    $yrProp = $qa.manualYBySample.PSObject.Properties[$sample]
+                }
                 if ($yrProp) {
                     $yr = @($yrProp.Value)
                     $ycmd = "layer.y.from=$($yr[0]); layer.y.to=$($yr[1]);"
+                } elseif ($null -ne $qa.yFrom -and $null -ne $qa.yTo) {
+                    $ycmd = "layer.y.from=$($qa.yFrom); layer.y.to=$($qa.yTo);"
                 } else {
                     $ycmd = "layer.y.rescale=1;"
-                    $warnings.Add("No manual Qst y-axis range configured; used autoscale.")
+                    $warnings.Add("No Qst y-axis range configured; used autoscale.")
                 }
                 $cmd += " pe_cd $($config.originFolders.calc); win -a Qst; Text2.text$=`"$title`"; layer.x.from=$($qa.xFrom); layer.x.to=$($qa.xTo); $ycmd doc -uw;"
                 if ($doPng) { $cmd += " expGraph type:=png path:=`"$sampleDir`" filename:=`"${sample}_Qst`" tr1.unit:=2 tr1.width:=$w;" }

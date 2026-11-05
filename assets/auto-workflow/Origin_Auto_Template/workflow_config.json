@@ -30,16 +30,9 @@
     "Qst": {
       "xFrom": 0,
       "xTo": 3,
-      "manualYBySample": {
-        "Ag-BeTa": [6.5, 11],
-        "Ag-MOR": [0, 16],
-        "Ag-USY": [12.5, 22],
-        "Ag-ZSM-5": [6.5, 11],
-        "Cu-FER": [6.5, 15],
-        "Cu-MOR": [16.5, 26.5],
-        "Cu-USY": [6.5, 11],
-        "Cu-ZSM-5": [5, 10]
-      }
+      "yFrom": 0,
+      "yTo": 30,
+      "manualYBySample": {}
     }
   },
   "qst": {
@@ -51,5 +44,14 @@
     "postCropWhiteMargin": false
   },
   "titleFormat": "\\b({sample})",
-  "samplesDefault": ["Ag-BeTa", "Ag-MOR", "Ag-USY", "Ag-ZSM-5", "Cu-FER", "Cu-MOR", "Cu-USY", "Cu-ZSM-5"]
+  "samplesDefault": [
+    "Sample-A",
+    "Sample-B",
+    "Sample-C",
+    "Sample-D",
+    "Sample-E",
+    "Sample-F",
+    "Sample-G",
+    "Sample-H"
+  ]
 }

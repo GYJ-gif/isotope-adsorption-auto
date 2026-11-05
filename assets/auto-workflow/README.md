@@ -2,6 +2,8 @@
 
 This folder contains the complete packaged isotope adsorption automation workflow used by the `isotope-adsorption-auto` skill. It is designed to be portable: scripts locate sibling modules and templates relative to this folder, not through a fixed machine-specific path.
 
+Build `IAST_Auto_Template/iast_calc_gui.exe` and `Qst_Auto_Template/qst_calc_cli.exe` from the `source/` directories before a calculation run. Those binaries are gitignored; see the repository README for build commands and GitHub Releases.
+
 ## Run
 
 Prepared input:

@@ -5,8 +5,8 @@ Gas fractions (y):
   Component 1 = 0.100000
   Component 2 = 0.900000
 Model & initial params:
-  Component 1: DSLF  init=(A1=1.0)  CSV=E:\qclaw\V1.2\IAST_release\example\C3H6.csv
-  Component 2: DSLF  init=(A1=1.0)  CSV=E:\qclaw\V1.2\IAST_release\example\C2H4.csv
+  Component 1: DSLF  init=(A1=1.0)  CSV=example/C3H6.csv
+  Component 2: DSLF  init=(A1=1.0)  CSV=example/C2H4.csv
 Pressures (kPa): auto
 Component 1: 62 data pts
 Component 2: 61 data pts

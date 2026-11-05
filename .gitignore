@@ -4,6 +4,26 @@ __pycache__/
 logs/
 *.log
 
+# Compiled programs and native build outputs. Publish binaries via GitHub Releases.
+*.exe
+*.obj
+*.o
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.dll
+*.idb
+*.suo
+*.user
+*.pch
+*.tlog
+build/
+out/
+cmake-build-*/
+[Bb]in/
+[Oo]bj/
+
 .env
 .env.*
 !.env.example

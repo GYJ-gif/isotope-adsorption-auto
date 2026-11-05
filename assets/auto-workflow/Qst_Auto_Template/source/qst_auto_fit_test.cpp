@@ -8,6 +8,11 @@
 int main() {
     using namespace qst;
 
+    const double a_coeffs[] = {-1000.0, -50.0};
+    const double n = 1.0;
+    const double expected_qst = -R * (-1000.0 + -50.0 * n) / 1000.0;
+    assert(std::abs(qst_at_loading(n, a_coeffs, 1) - expected_qst) < 1e-12);
+
     const std::vector<double> loadings{0.2, 0.5, 1.0, 1.5, 2.0};
     std::vector<double> params{-1000.0, -50.0, 2.0};
 

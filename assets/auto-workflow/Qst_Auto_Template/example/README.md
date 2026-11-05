@@ -26,7 +26,7 @@ Pressure_kPa,Uptake_mmol_g
 
 ## Usage
 
-1. Launch `qst_calc_gui.exe`
+1. Build `qst_calc_gui.exe` from `../source` (see the repository README), then launch it
 2. Click **Add** to load each CSV file
 3. Enter the corresponding temperature (e.g. `273`, `298`, `313`) for each dataset
 4. Click **Run** to calculate Qst

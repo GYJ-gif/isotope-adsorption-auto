@@ -23,6 +23,6 @@ Selected samples:
   - `/Folder1/计算/Qst`
 - Replace graph titles with `\b(<Sample>)`.
 - IAST axis defaults: x = 0-106, y = 1-1.6.
-- Qst starts at x = 0 and uses per-sample manual y-axis ranges when configured; otherwise it autos-scales and records a warning.
+- Qst starts at x = 0 and uses the shared `axes.Qst.yFrom` / `yTo` range. Add a sample id under `manualYBySample` only when that sample needs its own y-axis. If neither is set, the axis autoscales and the report records a warning.
 - If Qst contains negative values, skip only the Qst plot; HD and IAST continue.
 - PNG outputs are written back to each sample folder.

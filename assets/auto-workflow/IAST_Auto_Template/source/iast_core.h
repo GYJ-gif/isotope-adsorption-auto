@@ -15,6 +15,8 @@
 #include <random>
 #include <chrono>
 #include <filesystem>
+#include <limits>
+#include <utility>
 
 namespace iast {
 
